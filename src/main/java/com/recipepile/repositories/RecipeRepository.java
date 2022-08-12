@@ -11,4 +11,7 @@ public interface RecipeRepository extends MongoRepository<Recipe, Long> {
     @Query("'categories : ?0'")
     Collection<Recipe> findAllByCategory(Category category);
 
+    @Query("'aggregate([{$sample: {size: 7}}])'")
+    Collection<Recipe> getTopRecipes();
+
 }

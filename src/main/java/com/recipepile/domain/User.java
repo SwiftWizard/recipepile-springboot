@@ -32,10 +32,15 @@ public class User implements UserDetails, HumanUserValidation {
 
     private String surname;
     private String username;
+
+    @NotNull(message = "Nickname cannot be null!")
+    @NotEmpty(message = "Nickname cannot be empty")
+    private String nick;
     @NotNull(message = "You must enter a password, it cannot be null!")
     @NotEmpty(message = "The password cannot be empty!")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
+
 
     private Set<Authority> authorities = new HashSet<>();
 

@@ -20,13 +20,13 @@ public class MyUserDetailsService implements UserDetailsService {
         boolean accountNonExpired = true;
         boolean credentialsNonExpired = true;
         boolean accountNonLocked = true;
-        try {
-            User user = userRepository.findByUsername(email);
-            if (user == null) {
-                throw new UsernameNotFoundException(
-                        "No user found with username: " + email);
-            }
 
+        User user = userRepository.findByUsername(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("No user found with username: " + email);
+        }
+
+        try {
             return new org.springframework.security.core.userdetails.User(
                     user.getUsername(),
                     user.getPassword(),
@@ -35,8 +35,9 @@ public class MyUserDetailsService implements UserDetailsService {
                     credentialsNonExpired,
                     accountNonLocked,
                     user.getAuthorities());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

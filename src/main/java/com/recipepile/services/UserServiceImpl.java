@@ -32,6 +32,9 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User registerNewUserAccount(User user) throws UsernameExistsException{
+
+        System.out.println("\n\n\n      ->" + user.getUsername() + "\n\n\n");
+
         if(findByEmail(user.getUsername()) != null)
             throw new UsernameExistsException("User with the supplied email exists");
 

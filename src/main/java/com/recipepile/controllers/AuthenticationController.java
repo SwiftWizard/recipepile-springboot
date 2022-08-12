@@ -4,8 +4,8 @@ import com.recipepile.applicationEvents.OnRegistrationCompleteEvent;
 import com.recipepile.domain.AuthenticationRequest;
 import com.recipepile.domain.User;
 import com.recipepile.domain.VerificationToken;
+import com.recipepile.domain.dtos.generics.DataWithMessages;
 import com.recipepile.domain.dtos.UserSlimDTO;
-import com.recipepile.domain.dtos.UserSlimDTOWithMessages;
 import com.recipepile.domain.dtos.post.UserPost;
 import com.recipepile.exceptions.UsernameExistsException;
 import com.recipepile.mappers.UserMapper;
@@ -57,10 +57,11 @@ public class AuthenticationController {
     private ApplicationEventPublisher applicationEventPublisher;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<UserSlimDTOWithMessages> authenticate(@RequestBody AuthenticationRequest authenticationRequest) throws Exception{
+    public ResponseEntity<DataWithMessages<UserSlimDTO, List<String>>> authenticate(@RequestBody AuthenticationRequest authenticationRequest) throws Exception{
         System.out.println("About to try authentication with credentials: " + authenticationRequest);
         List<String> messages = new ArrayList<>();
         UserSlimDTO user = null;
+
         try {
             System.out.println(" -> Trying authentication...");
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
@@ -68,22 +69,26 @@ public class AuthenticationController {
         catch (BadCredentialsException e) {
             System.out.println("        -> Authentication failed");
             messages.add("Authentication failed, check username and password");
-            return new ResponseEntity<UserSlimDTOWithMessages>(new UserSlimDTOWithMessages(user, messages), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new DataWithMessages<>(user, messages), HttpStatus.UNAUTHORIZED);
         }
         catch(LockedException e){
             System.out.println("        ->Account is locked");
             messages.add("Account is locked");
-            return new ResponseEntity<UserSlimDTOWithMessages>(new UserSlimDTOWithMessages(user, messages), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new DataWithMessages<>(user, messages), HttpStatus.UNAUTHORIZED);
         }
         catch(DisabledException e){
             System.out.println("        ->Account is disabled");
             messages.add("Account is disabled");
-            return new ResponseEntity<UserSlimDTOWithMessages>(new UserSlimDTOWithMessages(user, messages), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new DataWithMessages<>(user, messages), HttpStatus.UNAUTHORIZED);
         }
         catch(CredentialsExpiredException e){
             System.out.println("        ->Account credentials expired");
             messages.add("Account credentials expired");
-            return new ResponseEntity<UserSlimDTOWithMessages>(new UserSlimDTOWithMessages(user, messages), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new DataWithMessages<>(user, messages), HttpStatus.UNAUTHORIZED);
+        }
+        catch(InternalAuthenticationServiceException e){
+            messages.add("Unexpected backend error");
+            return new ResponseEntity<>(new DataWithMessages<>(user, messages), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
@@ -94,14 +99,14 @@ public class AuthenticationController {
         slimUser.setJwt(jwt);
         slimUser.setJwtExpireTime(jwtUtil.extractExpiration(jwt));
 
-        return ResponseEntity.ok(new UserSlimDTOWithMessages(slimUser, messages));
+        return ResponseEntity.ok(new DataWithMessages<>(slimUser, messages));
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<UserSlimDTOWithMessages> register(@RequestBody UserPost userPost, HttpServletRequest request) {
+    public ResponseEntity<DataWithMessages<UserSlimDTO, List<String>>> register(@RequestBody UserPost userPost, HttpServletRequest request) {
         List<String> messages = new ArrayList<>();
 
-        UserSlimDTOWithMessages result;
+        DataWithMessages<UserSlimDTO, List<String>> result;
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
@@ -114,9 +119,9 @@ public class AuthenticationController {
             for (ConstraintViolation<User> violation : violations) {
                 messages.add(violation.getMessage());
             }
-            ResponseEntity<UserSlimDTOWithMessages> responseEntity;
-            result = new UserSlimDTOWithMessages(null, messages);
-            responseEntity = new ResponseEntity<UserSlimDTOWithMessages>(result, HttpStatus.CONFLICT);
+            ResponseEntity<DataWithMessages<UserSlimDTO, List<String>>> responseEntity;
+            result = new DataWithMessages<>(null, messages);
+            responseEntity = new ResponseEntity<>(result, HttpStatus.CONFLICT);
             return responseEntity;
 
         } else {
@@ -129,34 +134,32 @@ public class AuthenticationController {
                 String appUrl = request.getContextPath() + "/api/auth";
                 applicationEventPublisher.publishEvent(new OnRegistrationCompleteEvent(newUser, request.getLocale(), appUrl));
                 UserSlimDTO slimUserDTO = userMapper.userToUserSlimDTO(newUser);
-                result = new UserSlimDTOWithMessages(slimUserDTO, messages);
+                result = new DataWithMessages<>(slimUserDTO, messages);
                 return new ResponseEntity<>(result, HttpStatus.CREATED);
             }catch (UsernameExistsException uEx){
-                return new ResponseEntity<>(new UserSlimDTOWithMessages(null, Arrays.asList("Email already exists in the app")), HttpStatus.CONFLICT);
+                return new ResponseEntity<>(new DataWithMessages<>(null, Arrays.asList("Email already exists in the app")), HttpStatus.CONFLICT);
             }
         }
     }
 
     @GetMapping("/registrationConfirm")
-    public ResponseEntity<UserSlimDTOWithMessages> confirmRegistration(WebRequest request, @RequestParam("token") String token) {
-
-        Locale locale = request.getLocale();
+    public ResponseEntity<DataWithMessages<UserSlimDTO, List<String>>> confirmRegistration(WebRequest request, @RequestParam("token") String token) {
 
         VerificationToken verificationToken = userService.getVerificationToken(token);
         if (verificationToken == null) {
-            return new ResponseEntity<>(new UserSlimDTOWithMessages(null, Arrays.asList("No token provided")), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new DataWithMessages<>(null, Arrays.asList("No token provided")), HttpStatus.NO_CONTENT);
         }
 
         User user = verificationToken.getUser();
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         if ((verificationToken.getExpiryTime().compareTo(currentDateTime) <= 0)) {
-            return new ResponseEntity<>(new UserSlimDTOWithMessages(null, Arrays.asList("Verification link expired ")), HttpStatus.GONE);
+            return new ResponseEntity<>(new DataWithMessages<>(null, Arrays.asList("Verification link expired ")), HttpStatus.GONE);
         }
 
         user.setAccountEnabled(true);
         userService.saveRegisteredUser(user);
 
-        return new ResponseEntity<>(new UserSlimDTOWithMessages(userMapper.userToUserSlimDTO(user), Arrays.asList("Account activated")), HttpStatus.OK);
+        return new ResponseEntity<>(new DataWithMessages<>(userMapper.userToUserSlimDTO(user), Arrays.asList("Account activated")), HttpStatus.OK);
     }
 }

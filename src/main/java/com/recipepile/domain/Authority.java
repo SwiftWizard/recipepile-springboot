@@ -3,11 +3,9 @@ package com.recipepile.domain;
 import org.springframework.security.core.GrantedAuthority;
 
 public class Authority implements GrantedAuthority {
-    private String authority;
+    private String authority = "ROLE_STANDARD-USER";
 
-    public Authority() {
-        this.authority = "ROLE_STANDARD-USER";
-    }
+    public Authority() {}
 
     public Authority(String authority) {
         this.authority = authority;
@@ -16,5 +14,9 @@ public class Authority implements GrantedAuthority {
     @Override
     public String getAuthority() {
         return authority;
+    }
+
+    public void setAuthority(String authority){
+        this.authority = authority;
     }
 }

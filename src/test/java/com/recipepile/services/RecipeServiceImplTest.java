@@ -9,10 +9,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 class RecipeServiceImplTest {
 
@@ -30,10 +27,10 @@ class RecipeServiceImplTest {
     @Test
     public void getRecipes(){
         Recipe rec1 = new Recipe();
-        List recipeData = new ArrayList();
+        List<Recipe> recipeData = new ArrayList<>();
         recipeData.add(rec1);
 
-        Mockito.when(recipeRepository.findAll()).thenReturn((recipeData));
+        Mockito.when(recipeRepository.findAll()).thenReturn(recipeData);
 
         List<Recipe> recipes = (List<Recipe>) recipeService.getRecipes();
 

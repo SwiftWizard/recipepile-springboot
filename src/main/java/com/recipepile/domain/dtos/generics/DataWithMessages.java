@@ -1,19 +1,16 @@
-package com.recipepile.domain.dtos;
+package com.recipepile.domain.dtos.generics;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserSlimDTOWithMessages {
+public class DataWithMessages <D, M>{
     @JsonProperty("data")
-    private UserSlimDTO user;
-
+    private D data;
     @JsonProperty("messages")
-    private List<String> messages;
+    private M messages;
 }

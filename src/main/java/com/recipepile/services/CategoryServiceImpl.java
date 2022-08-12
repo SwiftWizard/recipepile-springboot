@@ -1,9 +1,13 @@
 package com.recipepile.services;
 
 import com.recipepile.domain.Category;
+import com.recipepile.domain.comparators.CategoryComparator;
 import com.recipepile.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategoryService{
@@ -28,5 +32,11 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public boolean categoryExists(Category category) {
         return categoryRepository.existsById(category.getCategoryId());
+    }
+
+    @Override
+    public List<Category> fetchCategories() {
+        List<Category> categories = categoryRepository.findAll(Sort.by(Sort.Direction.ASC, "parentCategory"));
+        return categories;
     }
 }

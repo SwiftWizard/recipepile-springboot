@@ -2,6 +2,7 @@ package com.recipepile.domain;
 
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Data
 @Document
+@EqualsAndHashCode
 public class Category {
 
     @Transient
@@ -22,6 +24,8 @@ public class Category {
     private Long categoryId;
 
     private String categoryName;
+
+    private Category parentCategory;
 
     @DBRef
     private List<Recipe> recipes = new ArrayList<>();

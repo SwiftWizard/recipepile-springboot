@@ -6,6 +6,5 @@ import lombok.Data;
 public class UserSlimInfoDTO {
     private Long uuid;
     private String username;
-    private String name;
-    private String surname;
+    private String nick;
 }

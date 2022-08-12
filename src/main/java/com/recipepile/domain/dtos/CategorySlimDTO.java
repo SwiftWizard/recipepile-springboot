@@ -7,4 +7,5 @@ import lombok.Data;
 public class CategorySlimDTO {
     private Long categoryId;
     private String categoryName;
+    private CategorySlimDTO parentCategory;
 }

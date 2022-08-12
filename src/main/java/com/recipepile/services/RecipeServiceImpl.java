@@ -64,4 +64,10 @@ public class RecipeServiceImpl implements RecipeService{
 
         return recipeRepository.save(recipe);
     }
+
+    @Override
+    public Collection<Recipe> getTopRecipes() {
+        return recipeRepository.getTopRecipes();
+    }
+
 }

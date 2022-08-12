@@ -10,6 +10,6 @@ public interface RecipeService {
 
     Collection<Recipe> getRecipes();
     Collection<Recipe> getRecipes(Category category);
-
     Recipe addRecipe(Recipe recipe) throws CategoryNotFoundException;
+    Collection<Recipe> getTopRecipes();
 }

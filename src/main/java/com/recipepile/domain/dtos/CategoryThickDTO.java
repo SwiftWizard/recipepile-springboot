@@ -9,6 +9,6 @@ import java.util.List;
 public class CategoryThickDTO {
     private Long categoryId;
     private String categoryName;
-
+    private CategorySlimDTO parentCategory;
     private List<RecipeThickDTO> recipes;
 }

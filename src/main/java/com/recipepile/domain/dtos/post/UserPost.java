@@ -20,6 +20,8 @@ public class UserPost {
     private String surname;
     @JsonProperty("email")
     private String username;
+    @JsonProperty("nick")
+    private String nick;
     @JsonProperty("password")
     private String password;
     private String repeatPassword;
