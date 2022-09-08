@@ -13,5 +13,4 @@ public interface RecipeRepository extends MongoRepository<Recipe, Long> {
 
     @Query("'aggregate([{$sample: {size: 7}}])'")
     Collection<Recipe> getTopRecipes();
-
 }

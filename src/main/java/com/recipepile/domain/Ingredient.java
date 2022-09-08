@@ -1,11 +1,12 @@
 package com.recipepile.domain;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString
 public class Ingredient {
     private String ingredientName;
-    private String description;
     private double amount;
-    private UnitOfMeasure unitOfMeasure;
+    private String unitOfMeasure;
 }

@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
-@EnableMongoRepositories
+@EnableMongoRepositories(basePackages = "com.recipepile.repositories")
 @ComponentScan(basePackages = "com.recipepile.*")
 public class RecipepileApplication {
 

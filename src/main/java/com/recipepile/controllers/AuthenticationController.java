@@ -78,7 +78,7 @@ public class AuthenticationController {
         }
         catch(DisabledException e){
             System.out.println("        ->Account is disabled");
-            messages.add("Account is disabled");
+            messages.add("Account is disabled, please check your email for an activation link");
             return new ResponseEntity<>(new DataWithMessages<>(user, messages), HttpStatus.UNAUTHORIZED);
         }
         catch(CredentialsExpiredException e){

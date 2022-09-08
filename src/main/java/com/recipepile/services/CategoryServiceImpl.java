@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoryServiceImpl implements CategoryService{
@@ -38,5 +39,10 @@ public class CategoryServiceImpl implements CategoryService{
     public List<Category> fetchCategories() {
         List<Category> categories = categoryRepository.findAll(Sort.by(Sort.Direction.ASC, "parentCategory"));
         return categories;
+    }
+
+    @Override
+    public Optional<Category> findById(Long id) {
+        return categoryRepository.findById(id);
     }
 }

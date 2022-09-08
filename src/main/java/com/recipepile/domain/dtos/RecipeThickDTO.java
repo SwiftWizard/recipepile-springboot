@@ -17,16 +17,14 @@ public class RecipeThickDTO {
     private Integer timeNeeded;
     private String source;
     private String url;
-    private Note note;
+    private String article;
     private Integer servings;
 
     private UserSlimInfoDTO author;
 
     private Set<String> images = new HashSet<>();
 
-    private Set<Step> steps = new HashSet<>();
-
     private Set<CategorySlimDTO> categories = new HashSet<>();
 
-    private Set<Ingredient> allStuffNeeded = new HashSet<>();
+    private Set<Ingredient> ingredients = new HashSet<>();
 }

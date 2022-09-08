@@ -43,7 +43,7 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
         String subject = "Registration Confirmation";
         String confirmationUrl
                 = event.getAppUrl() + "/registrationConfirm?token=" + token;
-        String message = "Welcome to recipepile.com, enjoy cooking and sharing new recipes!";
+        String message = "Welcome to recipepile.online, enjoy cooking and sharing new recipes!";
 
 
         System.out.println("\n\n"+sender+"\n\n");
@@ -51,7 +51,7 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
         email.setFrom(sender);
         email.setTo(recipientAddress);
         email.setSubject(subject);
-        email.setText(message + "\r\n" + "http://localhost:8080" + confirmationUrl);
+        email.setText(message  + "https://recipepile.azurewebsites.net" + confirmationUrl);
         mailSender.send(email);
     }
 }
